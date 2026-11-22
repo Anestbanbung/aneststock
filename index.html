@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AnesStock Pro</title>
+<meta name="description" content="ระบบบริหารคลังยาและเวชภัณฑ์วิสัญญี">
+<meta name="theme-color" content="#2563eb">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AnesStock">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<script src="config.js"></script>
+<style>
+  :root { --bg: #eaf3ff; --tx: #0f172a; --mu: #64748b; --p: #2563eb; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #0b1220; --tx: #e2e8f0; --mu: #94a3b8; } }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--tx); font-family: system-ui, -apple-system, "Segoe UI", "Noto Sans Thai", sans-serif; }
+  body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); box-sizing: border-box; overflow: hidden; }
+  #app { position: fixed; inset: env(safe-area-inset-top) 0 0 0; width: 100%; height: calc(100% - env(safe-area-inset-top)); border: 0; display: block; background: var(--bg); }
+  #splash { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: var(--bg); transition: opacity .35s; z-index: 2; text-align: center; padding: 24px; }
+  #splash img { width: 96px; height: 96px; border-radius: 22px; box-shadow: 0 12px 32px rgba(37, 99, 235, .3); }
+  #splash b { font-size: 20px; }
+  #splash small { color: var(--mu); }
+  .spin { width: 26px; height: 26px; border: 3px solid rgba(37, 99, 235, .2); border-top-color: var(--p); border-radius: 50%; animation: s 0.9s linear infinite; }
+  @keyframes s { to { transform: rotate(360deg); } }
+  #slow { display: none; max-width: 320px; font-size: 14px; color: var(--mu); }
+  #slow a, #off a { display: inline-block; margin-top: 10px; padding: 10px 18px; border-radius: 12px; background: var(--p); color: #fff; text-decoration: none; font-weight: 600; }
+  #off { display: none; }
+  .hide { opacity: 0; pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="splash">
+  <img src="icon-512.png" alt="">
+  <b>AnesStock Pro</b>
+  <div class="spin" id="spin"></div>
+  <small id="msg">กำลังเปิดระบบ…</small>
+  <div id="slow">ถ้ารอนานแล้วยังไม่ขึ้น กดปุ่มนี้เพื่อเปิดระบบในเบราว์เซอร์<br><a id="open" href="#" target="_blank" rel="noopener">เปิดระบบ</a></div>
+  <div id="off">ไม่มีสัญญาณอินเทอร์เน็ต — เชื่อมต่อแล้วกดลองใหม่<br><a href="#" onclick="location.reload();return false">ลองใหม่</a></div>
+</div>
+<iframe id="app" title="AnesStock Pro" allow="camera; microphone; clipboard-read; clipboard-write; fullscreen; geolocation" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+<script>
+  (function () {
+    var url = window.APP_URL || '';
+    var f = document.getElementById('app'), sp = document.getElementById('splash');
+    document.getElementById('open').href = url;
+    if (!navigator.onLine) { document.getElementById('spin').style.display = 'none'; document.getElementById('msg').style.display = 'none'; document.getElementById('off').style.display = 'block'; return; }
+    var done = false;
+    f.addEventListener('load', function () { if (done) return; done = true; setTimeout(function () { sp.classList.add('hide'); }, 600); });
+    setTimeout(function () { if (!done) document.getElementById('slow').style.display = 'block'; }, 15000);
+    f.src = url + (location.hash || '');
+    if ('serviceWorker' in navigator) window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () { }); });
+  })();
+</script>
+</body>
+</html>
